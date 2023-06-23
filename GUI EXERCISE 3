@@ -1,1 +1,165 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+public class GameHub extends JFrame implements ActionListener {
+    private JButton playButton;
+    private JButton instructionsButton;
+    private JButton quitButton;
+
+    public GameHub() {
+        setTitle("Game Hub");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(300, 200);
+        setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(3, 1, 10, 10));
+
+        playButton = new JButton("Play");
+        playButton.addActionListener(this);
+
+        instructionsButton = new JButton("Instructions");
+        instructionsButton.addActionListener(this);
+
+        quitButton = new JButton("Quit");
+        quitButton.addActionListener(this);
+
+        panel.add(playButton);
+        panel.add(instructionsButton);
+        panel.add(quitButton);
+
+        setContentPane(panel);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == playButton) {
+            GameWindow gameWindow = new GameWindow();
+            gameWindow.setVisible(true);
+            dispose();
+        } else if (e.getSource() == instructionsButton) {
+            InstructionsWindow instructionsWindow = new InstructionsWindow();
+            instructionsWindow.setVisible(true);
+        } else if (e.getSource() == quitButton) {
+            System.exit(0);
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            GameHub gameHub = new GameHub();
+            gameHub.setVisible(true);
+        });
+    }
+}
+
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class InstructionsWindow extends JFrame implements ActionListener {
+    private JButton backButton;
+
+    public InstructionsWindow() {
+        setTitle("Instructions");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(300, 200);
+        setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel();
+
+        JTextArea instructionsArea = new JTextArea("Guessing Game Instructions:\n\n" +
+                "1. The computer will generate a random number between 1 and 30.\n" +
+                "2. Enter your guess in the text box provided.\n" +
+                "3. Click the 'Check' button to check your guess.\n" +
+                "4. You will be informed if your guess is too high, too low, or correct.\n" +
+                "5. Keep guessing until you guess the correct number.\n" +
+                "6. Have fun!");
+
+        instructionsArea.setEditable(false);
+        instructionsArea.setLineWrap(true);
+        instructionsArea.setWrapStyleWord(true);
+
+        backButton = new JButton("Back");
+        backButton.addActionListener(this);
+
+        panel.add(instructionsArea);
+        panel.add(backButton);
+
+        setContentPane(panel);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == backButton) {
+            dispose();
+        }
+    }
+}
+
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class GameWindow extends JFrame implements ActionListener {
+    private JTextField guessField;
+    private JButton checkButton;
+    private JLabel resultLabel;
+
+    private int targetNumber;
+
+    public GameWindow() {
+        setTitle("Guessing Game");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(300, 200);
+        setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout(10, 10));
+
+        JLabel promptLabel = new JLabel("Guess a number between 1 and 30:");
+        panel.add(promptLabel, BorderLayout.NORTH);
+
+        guessField = new JTextField();
+        panel.add(guessField, BorderLayout.CENTER);
+
+        checkButton = new JButton("Check");
+        checkButton.addActionListener(this);
+        panel.add(checkButton, BorderLayout.EAST);
+
+        resultLabel = new JLabel(" ");
+        panel.add(resultLabel, BorderLayout.SOUTH);
+
+        setContentPane(panel);
+
+        generateTargetNumber();
+    }
+
+    private void generateTargetNumber() {
+        targetNumber = (int) (Math.random() * 30) + 1;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == checkButton) {
+            try {
+                int guess = Integer.parseInt(guessField.getText());
+
+                if (guess < targetNumber) {
+                    resultLabel.setText("Too low");
+                } else if (guess > targetNumber) {
+                    resultLabel.setText("Too high");
+                } else {
+                    resultLabel.setText("You got it!");
+                    checkButton.setEnabled(false);
+                }
+
+                guessField.setText("");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Invalid input! Please enter a valid integer.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+}
