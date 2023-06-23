@@ -1,1 +1,68 @@
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class IntegerVerifierGUI extends JFrame implements ActionListener {
+    private JTextField textField;
+    private JLabel resultLabel;
+
+    public IntegerVerifierGUI() {
+        setTitle("Integer Verifier");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(300, 150);
+        setLocationRelativeTo(null);
+
+        // Creates components
+        JPanel panel = new JPanel();
+        textField = new JTextField(10);
+        JButton verifyButton = new JButton("Verify");
+        JButton cancelButton = new JButton("Cancel");
+        resultLabel = new JLabel();
+
+        // Add components to the panel
+        panel.add(new JLabel("Enter an integer:"));
+        panel.add(textField);
+        panel.add(verifyButton);
+        panel.add(cancelButton);
+        panel.add(resultLabel);
+
+        // Sets the panel as the content pane
+        setContentPane(panel);
+
+        // Add action listeners to the buttons
+        verifyButton.addActionListener(this);
+        cancelButton.addActionListener(this);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals("Verify")) {
+            String input = textField.getText();
+            try {
+                int number = Integer.parseInt(input);
+                resultLabel.setText(input + " is an integer.");
+            } catch (NumberFormatException ex) {
+                resultLabel.setText(input + " is not an integer.");
+            }
+        } else if (e.getActionCommand().equals("Cancel")) {
+            dispose(); // Close the window
+        }
+    }
+
+    public void run() {
+        SwingUtilities.invokeLater(() -> {
+            setVisible(true);
+        });
+    }
+}
+
+
+public class IntegerVerifierApp {
+    public static void main(String[] args) {
+        IntegerVerifierGUI verifier = new IntegerVerifierGUI();
+        verifier.run();
+    }
+}
+
