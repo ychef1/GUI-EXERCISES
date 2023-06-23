@@ -1,1 +1,105 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class CalculatorGUI extends JFrame implements ActionListener {
+    private JTextField amountField;
+    private JButton depositButton;
+    private JButton withdrawButton;
+    private JLabel balanceLabel;
+    private CalculatorLogic calculatorLogic;
+
+    public CalculatorGUI() {
+        setTitle("Bank Account");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(300, 200);
+        setLocationRelativeTo(null);
+
+        // Create components
+        JPanel panel = new JPanel();
+        amountField = new JTextField(10);
+        depositButton = new JButton("Deposit");
+        withdrawButton = new JButton("Withdraw");
+        balanceLabel = new JLabel("Balance: $0.00");
+        calculatorLogic = new CalculatorLogic();
+
+        // Add components to the panel
+        panel.add(new JLabel("Amount:"));
+        panel.add(amountField);
+        panel.add(depositButton);
+        panel.add(withdrawButton);
+        panel.add(balanceLabel);
+
+        // Set the panel as the content pane
+        setContentPane(panel);
+
+        // Add action listeners to the buttons
+        depositButton.addActionListener(this);
+        withdrawButton.addActionListener(this);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+            double amount = Double.parseDouble(amountField.getText());
+
+            if (e.getSource() == depositButton) {
+                calculatorLogic.deposit(amount);
+            } else if (e.getSource() == withdrawButton) {
+                calculatorLogic.withdraw(amount);
+            }
+
+            double balance = calculatorLogic.getBalance();
+            balanceLabel.setText("Balance: $" + balance);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid amount. Please enter a valid number.");
+        } catch (InsufficientFundsException ex) {
+            JOptionPane.showMessageDialog(this, "Insufficient funds.");
+        }
+    }
+
+    public void run() {
+        SwingUtilities.invokeLater(() -> {
+            setVisible(true);
+        });
+    }
+}
+
+public class CalculatorLogic {
+    private double balance;
+
+    public CalculatorLogic() {
+        this.balance = 0.0;
+    }
+
+    public void deposit(double amount) {
+        balance += amount;
+    }
+
+    public void withdraw(double amount) throws InsufficientFundsException {
+        if (amount > balance) {
+            throw new InsufficientFundsException("Insufficient funds.");
+        }
+        balance -= amount;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+}
+
+public class CalculatorApp {
+    public static void main(String[] args) {
+        CalculatorGUI calculatorGUI = new CalculatorGUI();
+        calculatorGUI.run();
+    }
+}
+
+public class InsufficientFundsException extends Exception {
+    public InsufficientFundsException(String message) {
+        super(message);
+    }
+}
+
 
